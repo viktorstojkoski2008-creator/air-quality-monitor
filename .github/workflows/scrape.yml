@@ -2,8 +2,8 @@ name: Scrape Air Quality Data
 
 on:
   schedule:
-    - cron: '*/30 * * * *'  # runs every 30 minutes
-  workflow_dispatch:  # allows manual trigger
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
 
 jobs:
   scrape:
@@ -25,5 +25,4 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-        run: py scraper/fetch.py
-        
+        run: python scraper/fetch.py
