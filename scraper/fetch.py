@@ -9,6 +9,44 @@ SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "sb_publishable_LSNQ_EqYsZ81ylQZIn
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+ONESIGNAL_API_KEY = os.environ.get("ONESIGNAL_API_KEY", "your_onesignal_key_here")
+ONESIGNAL_APP_ID = os.environ.get("ONESIGNAL_APP_ID", "c16ba5dc-7d22-4f8f-b4e4-8838e99b5e0a")
+
+THRESHOLDS = {
+    "PM10":  90,
+    "PM2.5": 50,
+    "NO2":   200,
+    "O3":    180,
+    "SO2":   250,
+}
+
+def send_notification(station, pollutant, value):
+    message = f"⚠️ {station}: {pollutant} is at {value:.1f} µg/m³ — Unhealthy air quality detected!"
+    payload = {
+        "app_id": ONESIGNAL_APP_ID,
+        "included_segments": ["Total Subscriptions"],
+        "contents": {"en": message},
+        "headings": {"en": "🌿 AirMK Alert"},
+    }
+    headers = {
+        "Authorization": f"Key {ONESIGNAL_API_KEY}",
+        "Content-Type": "application/json"
+    }
+    requests.post("https://api.onesignal.com/notifications", json=payload, headers=headers)
+    print(f"🔔 Alert sent: {message}")
+
+def check_alerts(readings):
+    for reading in readings:
+        threshold = THRESHOLDS.get(reading["pollutant"])
+        if threshold and reading["value"] > threshold:
+            send_notification(reading["station"], reading["pollutant"], reading["value"])
+            supabase.table("alerts").insert({
+                "station": reading["station"],
+                "pollutant": reading["pollutant"],
+                "value": reading["value"],
+                "threshold": float(threshold),
+            }).execute()
+
 API_URL = "https://air.moepp.gov.mk/api/data/measurements-filtered"
 
 def scrape_air_quality():
@@ -60,6 +98,7 @@ def scrape_air_quality():
     if readings:
         supabase.table("readings").insert(readings).execute()
         print(f"✅ Saved {len(readings)} readings to Supabase!")
+        check_alerts(readings)
     else:
         print("No readings found.")
 
