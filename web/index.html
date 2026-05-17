@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Macedonia Air Quality Monitor</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="logo">🌿 AirMK</div>
+      <div class="subtitle">North Macedonia Air Quality Monitor</div>
+      <div id="lastUpdated" class="last-updated">Loading...</div>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="aqi-overview">
+      <h2>Current Readings</h2>
+      <div id="stationCards" class="station-grid">
+        <div class="loading">Loading station data...</div>
+      </div>
+    </section>
+
+    <section class="map-section">
+      <h2>Station Map</h2>
+      <div id="map"></div>
+    </section>
+
+    <section class="chart-section">
+      <h2>Historical Data</h2>
+      <div class="chart-controls">
+        <select id="stationSelect">
+          <option value="">Select a station...</option>
+        </select>
+        <select id="pollutantSelect">
+          <option value="PM10">PM10</option>
+          <option value="PM2.5">PM2.5</option>
+          <option value="NO2">NO2</option>
+          <option value="O3">O3</option>
+          <option value="SO2">SO2</option>
+        </select>
+      </div>
+      <canvas id="historyChart"></canvas>
+    </section>
+
+    <section class="notify-section">
+      <h2>🔔 Get Air Quality Alerts</h2>
+      <p>Subscribe to get notified when air quality reaches dangerous levels in your area.</p>
+      <button id="notifyBtn" onclick="subscribeNotifications()">Enable Notifications</button>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
